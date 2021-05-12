@@ -1,0 +1,8 @@
+.coverage
+__pycache__
+build
+dist
+pyproject.toml
+setup.cfg
+.pytest_cache
+apputils.egg-info
