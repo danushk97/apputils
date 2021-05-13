@@ -118,7 +118,7 @@ class ErrorHandler:
             def wrapper(self, *args, **kwargs):
                 try:
                     return function(self, *args, **kwargs)
-                except tuple(exception_to_handle):
+                except tuple(exception_to_handle) as error:
                     e_type, _, tb = sys.exc_info()
                     log_message = (
                         f'[ERROR] Caught an exception, [error]: {e_type} '
@@ -127,7 +127,16 @@ class ErrorHandler:
                         f'[module_name]: {function.__module__}')
                     stack_trace = str(traceback.format_exc())
                     ErrorHandler.__log_error(log_message, stack_trace)
-                    raise exception_to_raise()
+                    error_codes = [GenericErrorCodes.INTERNAL_SERVER_ERROR]
+                    status_code = StatusCode.INTERNAL_SERVER_ERROR
+
+                    if isinstance(error, AppException):
+                        error_codes = [list(err.values()) for err in error.error_codes]
+                        status_code = error.status_code
+
+                    if exception_to_raise:
+                        raise exception_to_raise(error_codes=error_codes,
+                                                 status_code=status_code)
 
             return wrapper
 

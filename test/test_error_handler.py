@@ -47,3 +47,15 @@ def test_handle_exception():
 
     assert exc_info.value.error_codes == [{'error_code': 5000, 'error_description': 'Internal server error'}]
     assert exc_info.value.status_code == 500
+
+
+def test_handle_app_exception():
+    @ErrorHandler.handle_exception([AppException], AppException)
+    def mock_function(self):
+        raise AppException(error_codes=[(0, 'custom error_message')], status_code=400)
+
+    with pytest.raises(AppException) as exc_info:
+        mock_function("value")
+
+    assert exc_info.value.error_codes == [{'error_code': 0, 'error_description': 'custom error_message'}]
+    assert exc_info.value.status_code == 400
