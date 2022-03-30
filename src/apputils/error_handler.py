@@ -7,6 +7,7 @@ import logging
 import sys
 import functools
 
+from marshmallow.exceptions import ValidationError
 from apputils.status_code import StatusCode
 from apputils.exception import AppException
 from apputils.error_codes.generic_error_codes import GenericErrorCodes
@@ -35,7 +36,7 @@ class ErrorHandler:
         """
         self.__log_error(f'[ERROR] {error.error_codes}')
         response_dict = {
-            'error_codes': error.error_codes
+            'errors': error.error_codes
         }
         return response_dict, error.status_code
 
@@ -54,9 +55,7 @@ class ErrorHandler:
         """
         self.__log_error(f'[ERROR] {error}', stack_trace=traceback.format_exc())
         response_dict = {
-            'error_codes': [GenericErrorCodes.jsonify(
-                GenericErrorCodes.INTERNAL_SERVER_ERROR
-            )]
+            'errors': [GenericErrorCodes.INTERNAL_SERVER_ERROR]
         }
 
         return response_dict, StatusCode.INTERNAL_SERVER_ERROR
@@ -88,12 +87,43 @@ class ErrorHandler:
         """
         self.__log_error(f'[ERROR] {error}', stack_trace=traceback.format_exc())
         response_dict = {
-            'error_codes': [GenericErrorCodes.jsonify(
-                GenericErrorCodes.METHOD_NOT_ALLOWED
-            )]
+            'errors': [GenericErrorCodes.METHOD_NOT_ALLOWED]
         }
 
         return response_dict, StatusCode.METHOD_NOT_ALLOWED
+
+    def validation_error_handler(self, error: ValidationError):
+        """
+        Handles marshmallow validation error.
+
+        Args:
+            error (ValidationError)
+
+        Returns:
+            response_dict (dict): {
+                'errror_codes': []
+            }
+            status_code (HttpStatusCode)
+        """
+        self.__log_error(f'[ERROR] {error.messages}', stack_trace=traceback.format_exc())
+        errors = []
+
+        def extract_message(messages):
+            for message in messages.values():
+                if isinstance(message, list):
+                    errors.extend(message)
+
+                if isinstance(message, dict):
+                    extract_message(message)
+
+        extract_message(error.messages)
+
+        response_dict = {
+            'errors': errors,
+            'message': 'Please provide a valid data.'
+        }
+
+        return response_dict, StatusCode.BAD_REQUEST
 
     @staticmethod
     def __log_error(log_message: str='', stack_trace: str='') -> None:
@@ -110,9 +140,9 @@ class ErrorHandler:
         if stack_trace:
             logger.error(f'[STACK_TRACE] {stack_trace}')
 
+
     @staticmethod
-    def handle_exception(exception_to_handle: list,
-                         exception_to_raise: AppException):
+    def handle_exception(exception_to_handle: list, exception_to_raise: AppException):
         def actual_decorator(function):
             @functools.wraps(function)
             def wrapper(self, *args, **kwargs):
@@ -131,7 +161,7 @@ class ErrorHandler:
                     status_code = StatusCode.INTERNAL_SERVER_ERROR
 
                     if isinstance(error, AppException):
-                        error_codes = [list(err.values()) for err in error.error_codes]
+                        error_codes = error.error_codes
                         status_code = error.status_code
 
                     if exception_to_raise:

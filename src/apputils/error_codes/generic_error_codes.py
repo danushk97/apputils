@@ -9,5 +9,5 @@ class GenericErrorCodes(ErrorCodes):
     """
     Holds the generic error codes.
     """
-    INTERNAL_SERVER_ERROR = (5000, 'Internal server error')
-    METHOD_NOT_ALLOWED = (5001, 'The mehtod is not allowed for this URL')
+    INTERNAL_SERVER_ERROR = 'Internal server error'
+    METHOD_NOT_ALLOWED = 'The mehtod is not allowed for this URL'

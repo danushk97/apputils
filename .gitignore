@@ -6,3 +6,4 @@ pyproject.toml
 setup.cfg
 .pytest_cache
 apputils.egg-info
+venv

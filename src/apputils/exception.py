@@ -21,8 +21,5 @@ class AppException(Exception):
         Intansiates the class.
         """
         super().__init__(self)
-        self.error_codes = [GenericErrorCodes.jsonify(error_code)
-                            for error_code in error_codes] or \
-                           [GenericErrorCodes.jsonify(
-                               GenericErrorCodes.INTERNAL_SERVER_ERROR)]
+        self.error_codes = error_codes or [GenericErrorCodes.INTERNAL_SERVER_ERROR]
         self.status_code = status_code

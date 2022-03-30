@@ -4,6 +4,7 @@ This module holds the enum class for status code.
 
 from apputils.read_only import ReadOnly
 
+
 class StatusCode(ReadOnly):
     """
     Holds the status code info.
