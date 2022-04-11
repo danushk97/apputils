@@ -10,7 +10,7 @@ import functools
 from marshmallow.exceptions import ValidationError
 from apputils.status_code import StatusCode
 from apputils.exception import AppException
-from apputils.error_codes.generic_error_codes import GenericErrorCodes
+from apputils.error_message import ErrorMessage
 
 
 logger = logging.getLogger(__name__)
@@ -30,13 +30,17 @@ class ErrorHandler:
 
         Returns:
             response_dict (dict): {
-                'errror_codes': []
+                'error': {}
             }
             status_code (HttpStatusCode)
         """
-        self.__log_error(f'[ERROR] {error.error_codes}')
+        self.__log_error(f'[ERROR] {error.message}')
         response_dict = {
-            'errors': error.error_codes
+            'error': {
+                'errors': error.errors,
+                'code': error.status_code,
+                'message': error.message
+            }
         }
         return response_dict, error.status_code
 
@@ -53,9 +57,12 @@ class ErrorHandler:
             }
             status_code (HttpStatusCode)
         """
-        self.__log_error(f'[ERROR] {error}', stack_trace=traceback.format_exc())
+        self.__log_error(f'[ERROR] {error}')
         response_dict = {
-            'errors': [GenericErrorCodes.INTERNAL_SERVER_ERROR]
+            'error': {
+                'code': 500,
+                'message': ErrorMessage.INTERNAL_SERVER_ERROR
+            }
         }
 
         return response_dict, StatusCode.INTERNAL_SERVER_ERROR
@@ -85,9 +92,12 @@ class ErrorHandler:
             }
             status_code (HttpStatusCode)
         """
-        self.__log_error(f'[ERROR] {error}', stack_trace=traceback.format_exc())
+        self.__log_error(f'[ERROR] {error}')
         response_dict = {
-            'errors': [GenericErrorCodes.METHOD_NOT_ALLOWED]
+            'error': {
+                'code': StatusCode.METHOD_NOT_ALLOWED,
+                'message': ErrorMessage.METHOD_NOT_ALLOWED
+            }
         }
 
         return response_dict, StatusCode.METHOD_NOT_ALLOWED
@@ -105,13 +115,21 @@ class ErrorHandler:
             }
             status_code (HttpStatusCode)
         """
-        self.__log_error(f'[ERROR] {error.messages}', stack_trace=traceback.format_exc())
+        self.__log_error(f'[ERROR] {error.messages}')
         errors = []
 
         def extract_message(messages):
-            for message in messages.values():
+            for field, message in messages.items():
                 if isinstance(message, list):
-                    errors.extend(message)
+                    errors.extend(
+                        [
+                            {
+                                'field': field,
+                                'message': value
+                            }
+                            for value in message
+                        ]
+                    )
 
                 if isinstance(message, dict):
                     extract_message(message)
@@ -119,14 +137,17 @@ class ErrorHandler:
         extract_message(error.messages)
 
         response_dict = {
-            'errors': errors,
-            'message': 'Please provide a valid data.'
+            'error': {
+                'errors': errors,
+                'message': 'Payload contains missing or invalid data.',
+                'code': 400
+            }
         }
 
         return response_dict, StatusCode.BAD_REQUEST
 
     @staticmethod
-    def __log_error(log_message: str='', stack_trace: str='') -> None:
+    def __log_error(log_message: str='') -> None:
         """
         logs error message and stack trace.
 
@@ -135,10 +156,7 @@ class ErrorHandler:
             stack_trace (str)
         """
         if log_message:
-            logger.error(log_message)
-
-        if stack_trace:
-            logger.error(f'[STACK_TRACE] {stack_trace}')
+            logger.error(log_message, exc_info=True)
 
 
     @staticmethod
@@ -155,18 +173,22 @@ class ErrorHandler:
                         f'[line number]: {tb.tb_lineno} '
                         f'[function_name]: {function.__name__}'
                         f'[module_name]: {function.__module__}')
-                    stack_trace = str(traceback.format_exc())
-                    ErrorHandler.__log_error(log_message, stack_trace)
-                    error_codes = [GenericErrorCodes.INTERNAL_SERVER_ERROR]
+                    ErrorHandler.__log_error(log_message)
+                    error_message = ErrorMessage.INTERNAL_SERVER_ERROR
                     status_code = StatusCode.INTERNAL_SERVER_ERROR
+                    errors = []
 
                     if isinstance(error, AppException):
-                        error_codes = error.error_codes
+                        error_message = error.message
                         status_code = error.status_code
+                        errors=[]
 
                     if exception_to_raise:
-                        raise exception_to_raise(error_codes=error_codes,
-                                                 status_code=status_code)
+                        raise exception_to_raise(
+                            message=error_message,
+                            errors=errors,
+                            status_code=status_code
+                        )
 
             return wrapper
 
