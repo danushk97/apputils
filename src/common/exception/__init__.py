@@ -1,4 +1,4 @@
-from common.exception.appexception import AppException
+from common.exception.exceptions import AppException
 
 
 __all__ = [
