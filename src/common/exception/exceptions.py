@@ -53,7 +53,6 @@ class AppException(Exception):
         return message
 
 
-
 class InvalidParams(AppException):
     """
     This class represents invalid params exception which should be raised whenever a request parameters did not 
