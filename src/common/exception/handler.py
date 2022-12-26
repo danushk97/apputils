@@ -44,10 +44,7 @@ class ErrorHandler:
             error (Exception)
 
         Returns:
-            response_dict (dict): {
-                'errror_codes': []
-            }
-            status_code (HttpStatusCode)
+            response_dict (common.schemas.ErrorResponseSchema), status (HttpStatus):
         """
         logger.error(error, exc_info=True)
         exc = AppException(cause=error)  
@@ -61,7 +58,7 @@ class ErrorHandler:
             error (Exception)
 
         Returns:
-            response_content (str), 
+            response_content (str), status (HttpStatus):
         """
         logger.error(error, exc_info=True)
         return "404 page not found", HTTPStatus.NOT_FOUND
