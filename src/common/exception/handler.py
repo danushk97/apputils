@@ -10,7 +10,6 @@ import functools
 
 from pydantic.errors import PydanticValueError
 
-
 from common.exception import AppException
 from common.exception.message import ErrorMessage
 
