@@ -3,14 +3,16 @@ This module holds the class which is responsible for handling errors
 """
 
 import traceback
+from http import HTTPStatus
 import logging
 import sys
 import functools
 
-from marshmallow.exceptions import ValidationError
-from apputils.status_code import StatusCode
-from apputils.exception import AppException
-from apputils.error_message import ErrorMessage
+from pydantic.errors import PydanticValueError
+
+
+from common.exception import AppException
+from common.exception.message import ErrorMessage
 
 
 logger = logging.getLogger(__name__)
@@ -29,20 +31,10 @@ class ErrorHandler:
             error (AppException)
 
         Returns:
-            response_dict (dict): {
-                'error': {}
-            }
-            status_code (HttpStatusCode)
+            response_dict (common.schemas.ErrorResponseSchema), status (HttpStatus):
         """
-        self.__log_error(f'[ERROR] {error.message}')
-        response_dict = {
-            'error': {
-                'errors': error.errors,
-                'code': error.status_code,
-                'message': error.message
-            }
-        }
-        return response_dict, error.status_code
+        logger.error(error, exc_info=True)
+        return error.dict(), error.status
 
     def generic_error_handler(self, error: Exception) -> tuple:
         """
@@ -57,15 +49,9 @@ class ErrorHandler:
             }
             status_code (HttpStatusCode)
         """
-        self.__log_error(f'[ERROR] {error}')
-        response_dict = {
-            'error': {
-                'code': 500,
-                'message': ErrorMessage.INTERNAL_SERVER_ERROR
-            }
-        }
-
-        return response_dict, StatusCode.INTERNAL_SERVER_ERROR
+        logger.error(error, exc_info=True)
+        exc = AppException(cause=error)  
+        return exc.dict(), exc.status
 
     def page_not_found_handler(self, error: Exception) -> tuple:
         """
@@ -75,9 +61,10 @@ class ErrorHandler:
             error (Exception)
 
         Returns:
-            response (Response)
+            response_content (str), 
         """
-        return "404 page not found", StatusCode.PAGE_NOT_FOUND
+        logger.error(error, exc_info=True)
+        return "404 page not found", HTTPStatus.NOT_FOUND
 
     def method_not_allowed_handler(self, error: Exception) -> tuple:
         """
@@ -87,22 +74,18 @@ class ErrorHandler:
             error (Exception)
 
         Returns:
-            response_dict (dict): {
-                'errror_codes': []
-            }
-            status_code (HttpStatusCode)
+            response_dict (common.schemas.ErrorResponseSchema), status (HttpStatus):
         """
-        self.__log_error(f'[ERROR] {error}')
-        response_dict = {
-            'error': {
-                'code': StatusCode.METHOD_NOT_ALLOWED,
-                'message': ErrorMessage.METHOD_NOT_ALLOWED
-            }
-        }
+        exc = AppException(
+            title=ErrorMessage.INVALID_HTTP_METHOD,
+            detail=ErrorMessage.METHOD_NOT_ALLOWED,
+            status=HTTPStatus.METHOD_NOT_ALLOWED,
+            cause=error
+        )
+        logger.error(exc, exc_info=True)
+        return exc.dict(), HTTPStatus.METHOD_NOT_ALLOWED
 
-        return response_dict, StatusCode.METHOD_NOT_ALLOWED
-
-    def validation_error_handler(self, error: ValidationError):
+    def validation_error_handler(self, error: PydanticValueError):
         """
         Handles marshmallow validation error.
 
@@ -115,52 +98,12 @@ class ErrorHandler:
             }
             status_code (HttpStatusCode)
         """
-        self.__log_error(f'[ERROR] {error.messages}')
-        errors = []
-
-        def extract_message(messages):
-            for field, message in messages.items():
-                if isinstance(message, list):
-                    errors.extend(
-                        [
-                            {
-                                'field': field,
-                                'message': value
-                            }
-                            for value in message
-                        ]
-                    )
-
-                if isinstance(message, dict):
-                    extract_message(message)
-
-        extract_message(error.messages)
-
-        response_dict = {
-            'error': {
-                'errors': errors,
-                'message': 'Payload contains missing or invalid data.',
-                'code': 400
-            }
-        }
-
-        return response_dict, StatusCode.BAD_REQUEST
-
-    @staticmethod
-    def __log_error(log_message: str='') -> None:
-        """
-        logs error message and stack trace.
-
-        Args:
-            error (Exception)
-            stack_trace (str)
-        """
-        if log_message:
-            logger.error(log_message, exc_info=True)
-
+        # TODO: needs update.
+        raise error
 
     @staticmethod
     def handle_exception(exception_to_handle: list, exception_to_raise: AppException):
+        # TODO: needs update.
         def actual_decorator(function):
             @functools.wraps(function)
             def wrapper(self, *args, **kwargs):
@@ -173,9 +116,9 @@ class ErrorHandler:
                         f'[line number]: {tb.tb_lineno} '
                         f'[function_name]: {function.__name__}'
                         f'[module_name]: {function.__module__}')
-                    ErrorHandler.__log_error(log_message)
+                    logger.error(log_message, exc_info=True)
                     error_message = ErrorMessage.INTERNAL_SERVER_ERROR
-                    status_code = StatusCode.INTERNAL_SERVER_ERROR
+                    status_code = HTTPStatus.INTERNAL_SERVER_ERROR
                     errors = []
 
                     if isinstance(error, AppException):
