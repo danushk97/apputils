@@ -2,7 +2,6 @@
 This module holds the class which is responsible for handling errors
 """
 
-import traceback
 from http import HTTPStatus
 import logging
 import sys
