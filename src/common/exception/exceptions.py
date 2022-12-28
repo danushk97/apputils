@@ -5,6 +5,7 @@ This module holds the exception classes.
 from http import HTTPStatus
 
 from common.exception.message import ErrorMessage
+from common.enums import ResponseStatusEnum
 
 
 class AppException(Exception):
@@ -20,7 +21,7 @@ class AppException(Exception):
         status (int): The HTTP status code.
     """
     def __init__(self, 
-        type: str = 'about:blank', 
+        type: str = "about:blank", 
         title: str = ErrorMessage.INTERNAL_SERVER_ERROR, 
         detail: str = ErrorMessage.INTERNAL_SERVER_ERROR, 
         status: int = HTTPStatus.INTERNAL_SERVER_ERROR,
@@ -39,21 +40,24 @@ class AppException(Exception):
     
     def dict(self) -> dict:
         return {
-            'type': self.type,
-            'title': self.title,
-            'detail': self.detail,
-            'status': self.status
+            "type": self.type,
+            "title": self.title,
+            "detail": self.detail,
+            "status": ResponseStatusEnum.FAILURE.value
         }
     
     def __repr__(self) -> str:
-        message = self._log_message or self.detail
+        message = f"<{type(self).__name__}> {self._log_message or self.detail}"
         if self.cause:
-            message += f'[CAUSE]: {self.cause}'
+            message += f" [CAUSE]: {self.cause}"
         
         return message
+    
+    def __str__(self) -> str:
+        return repr(self)
 
 
-class InvalidParams(AppException):
+class InvalidParamsException(AppException):
     """
     This class represents invalid params exception which should be raised whenever a request parameters did not 
     validate.
@@ -63,7 +67,7 @@ class InvalidParams(AppException):
     """
     def __init__(self, 
         invalid_params: list, 
-        type: str = 'about:blank', 
+        type: str = "about:blank", 
         title: str = ErrorMessage.VALIDATION_ERROR, 
         detail: str = ErrorMessage.REQUEST_PARAMS_DID_NOT_VALIDATE, 
         status: int = HTTPStatus.BAD_REQUEST,
@@ -73,6 +77,7 @@ class InvalidParams(AppException):
         self.invalid_params = invalid_params
 
     def dict(self) -> dict:
-        data = super().dict()
-        data['invalid_params'] = self.invalid_params
-    
+        return {
+            **super().dict(),
+            "invalid_params": self.invalid_params
+        }

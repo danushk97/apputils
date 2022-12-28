@@ -20,7 +20,8 @@ class ErrorHandler:
     """
     Responsible to handle errors.
     """
-    def app_error_handler(self, error: AppException) -> tuple:
+    @staticmethod
+    def app_error_handler(error: AppException) -> tuple:
         """
         Handles the AppException and also Exceptions which are derived from
         AppException.
@@ -34,7 +35,8 @@ class ErrorHandler:
         logger.error(error, exc_info=True)
         return error.dict(), error.status
 
-    def generic_error_handler(self, error: Exception) -> tuple:
+    @staticmethod
+    def generic_error_handler(error: Exception) -> tuple:
         """
         Handles the Exception.
 
@@ -48,7 +50,8 @@ class ErrorHandler:
         exc = AppException(cause=error)  
         return exc.dict(), exc.status
 
-    def page_not_found_handler(self, error: Exception) -> tuple:
+    @staticmethod
+    def page_not_found_handler(error: Exception) -> tuple:
         """
         Handles the Page not found error.
 
@@ -61,6 +64,7 @@ class ErrorHandler:
         logger.error(error, exc_info=True)
         return "404 page not found", HTTPStatus.NOT_FOUND
 
+    @staticmethod
     def method_not_allowed_handler(self, error: Exception) -> tuple:
         """
         Handles the Page not found error.
@@ -80,7 +84,8 @@ class ErrorHandler:
         logger.error(exc, exc_info=True)
         return exc.dict(), HTTPStatus.METHOD_NOT_ALLOWED
 
-    def validation_error_handler(self, error: PydanticValueError):
+    @staticmethod
+    def validation_error_handler(error: PydanticValueError):
         """
         Handles marshmallow validation error.
 

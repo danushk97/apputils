@@ -1,6 +1,7 @@
-from common.exception.exceptions import AppException
+from common.exception.exceptions import AppException, InvalidParamsException
 
 
 __all__ = [
-    'AppException'
+    "AppException",
+    "InvalidParamsException"
 ]
