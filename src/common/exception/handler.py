@@ -65,7 +65,7 @@ class ErrorHandler:
         return "404 page not found", HTTPStatus.NOT_FOUND
 
     @staticmethod
-    def method_not_allowed_handler(self, error: Exception) -> tuple:
+    def method_not_allowed_handler(error: Exception) -> tuple:
         """
         Handles the Page not found error.
 
