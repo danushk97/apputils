@@ -1,6 +1,6 @@
 from typing import Any, List, Optional
 
-from common.enums import ResponseStatusEnum
+from appscommon.enums import ResponseStatusEnum
 from pydantic import BaseModel
 
 

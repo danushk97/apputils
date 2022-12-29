@@ -4,8 +4,8 @@ This module holds the exception classes.
 
 from http import HTTPStatus
 
-from common.exception.message import ErrorMessage
-from common.enums import ResponseStatusEnum
+from appscommon.exception.message import ErrorMessage
+from appscommon.enums import ResponseStatusEnum
 
 
 class AppException(Exception):

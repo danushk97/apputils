@@ -1,7 +1,7 @@
 from logging import getLogger
 from typing import Callable
 
-from common.exception import AppException, InvalidParamsException
+from appscommon.exception import AppException, InvalidParamsException
 from pydantic import ValidationError
 
 

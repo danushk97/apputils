@@ -1,4 +1,4 @@
-from common.readonly import ReadOnly
+from appscommon.readonly import ReadOnly
 
 
 class ErrorMessage(ReadOnly):

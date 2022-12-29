@@ -1,7 +1,7 @@
 from  http import HTTPStatus
 
-from common.exception.handler import ErrorHandler
-from common.exception import AppException
+from appscommon.exception.handler import ErrorHandler
+from appscommon.exception import AppException
 
 
 error_handler_module_path = 'user_accounts.common.error_handler'

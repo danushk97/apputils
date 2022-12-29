@@ -4,8 +4,8 @@ from logging import getLogger
 from os import abort
 from typing import Callable, Dict
 
-from common.exception import AppException
-from common.exception.handler import ErrorHandler
+from appscommon.exception import AppException
+from appscommon.exception.handler import ErrorHandler
 from flask import Flask
 
 

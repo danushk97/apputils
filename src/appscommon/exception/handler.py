@@ -9,8 +9,8 @@ import functools
 
 from pydantic.errors import PydanticValueError
 
-from common.exception import AppException
-from common.exception.message import ErrorMessage
+from appscommon.exception import AppException
+from appscommon.exception.message import ErrorMessage
 
 
 logger = logging.getLogger(__name__)
