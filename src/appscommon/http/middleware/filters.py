@@ -1,14 +1,12 @@
-from logging import getLogger
 from typing import Callable
+from functools import wraps
 
 from appscommon.exception import AppException, InvalidParamsException
 from pydantic import ValidationError
 
 
-logger = getLogger(__name__)
-
-
 def error_filter(source: Callable) -> Callable:
+    @wraps(source)
     def wrapper(*args, **kwargs):
         try:
             return source(*args, **kwargs)
