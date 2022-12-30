@@ -26,7 +26,7 @@ def init():
 class Logging:
     def __init__(self, name: str) -> None:
         self.name = name
-        self._logger = CustomAdapter(logging.getLogger(self.name), {'request_id': get_flask_request_id()})
+        self._logger = logging.getLogger(self.name)
 
     @property
     def logger(self):
@@ -37,6 +37,6 @@ class Logging:
         if g_logger:
             return g_logger
 
-        g.logger = CustomAdapter(logging.getLogger(self.name), {'request_id': get_flask_request_id()})
+        g.logger = CustomAdapter(self._logger, {'request_id': get_flask_request_id()})
 
         return g.get("logger")
