@@ -59,5 +59,3 @@ def register_error_handlers(app: Flask) -> None:
     """
     app.register_error_handler(404, ErrorHandler.page_not_found_handler)
     app.register_error_handler(405, ErrorHandler.method_not_allowed_handler)
-    app.register_error_handler(AppException, ErrorHandler.app_error_handler)
-    app.register_error_handler(Exception, ErrorHandler.generic_error_handler)
