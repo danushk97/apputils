@@ -1,42 +1,36 @@
 import logging
 import sys
+from uuid import uuid4
 
-from appscommon.http.utils import get_flask_request_id
-from flask import has_request_context, g
+from flask import has_request_context, g, request
 
 
-class CustomAdapter(logging.LoggerAdapter):
-    """
-    This example adapter expects the passed in dict-like object to have a
-    'connid' key, whose value in brackets is prepended to the log message.
-    """
-    def process(self, msg, kwargs):
-        return '[%s] %s' % (self.extra['request_id'], msg), kwargs
-         
+class RequestFormatter(logging.Formatter):
+    def format(self, record):
+        record.request_id = self.get_flask_request_id()
+
+        return super().format(record)
+    
+    def get_flask_request_id(self):
+        if not has_request_context():
+            return ''
+
+        request_id = g.get('request_id')
+        if request_id:
+            return request_id
+
+        g.request_id = request.headers.get('x-request-id') or uuid4() 
+
+        return g.get('request_id')
+
 
 def init():
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setFormatter(RequestFormatter(
+        "%(asctime)s.%(msecs)03d %(levelname)s %(request_id)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s"
+    ))
     logging.basicConfig(
         level=logging.DEBUG,
-        format="%(asctime)s.%(msecs)03d %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s",
         datefmt="%d/%b/%Y %H:%M:%S",
-        stream=sys.stdout
+        handlers=[handler]
     )
-
-
-class Logging:
-    def __init__(self, name: str) -> None:
-        self.name = name
-        self._logger = logging.getLogger(self.name)
-
-    @property
-    def logger(self):
-        if not has_request_context():
-            return self._logger
-        
-        g_logger = g.get('logger')
-        if g_logger:
-            return g_logger
-
-        g.logger = CustomAdapter(self._logger, {'request_id': get_flask_request_id()})
-
-        return g.get("logger")

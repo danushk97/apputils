@@ -2,14 +2,14 @@
 This module holds the class which is responsible for handling errors
 """
 
+from logging import getLogger
 from http import HTTPStatus
 
 from appscommon.exception import AppException
 from appscommon.exception.message import ErrorMessage
-from appscommon.logconfig import Logging
 
 
-_logging = Logging(__name__)
+_logger = getLogger(__name__)
 
 
 class ErrorHandler:
@@ -26,7 +26,7 @@ class ErrorHandler:
         Returns:
             response_content (str), status (HttpStatus):
         """
-        _logging.logger.error(error, exc_info=True)
+        _logger.error(error, exc_info=True)
         return "404 page not found", HTTPStatus.NOT_FOUND
 
     @staticmethod
@@ -46,5 +46,5 @@ class ErrorHandler:
             status=HTTPStatus.METHOD_NOT_ALLOWED,
             cause=error
         )
-        _logging.logger.error(exc, exc_info=True)
+        _logger.error(exc, exc_info=True)
         return exc.dict(), HTTPStatus.METHOD_NOT_ALLOWED
