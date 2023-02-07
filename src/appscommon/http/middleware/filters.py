@@ -17,7 +17,6 @@ def error_filter(source: Callable) -> Callable:
         tic = perf_counter()
         _logger.info(f"Starting to process {request.path}.")
         try:
-            import pdb; pdb.set_trace()
             data = source(*args, **kwargs)
         except ValidationError as v_err:
             errors = [{"field": err.pop("loc"), **err} for err in v_err.errors()]
