@@ -26,7 +26,7 @@ class ErrorHandler:
         Returns:
             response_content (str), status (HttpStatus):
         """
-        _logger.error(error, exc_info=True)
+        _logger.error(error)
         return "404 page not found", HTTPStatus.NOT_FOUND
 
     @staticmethod
@@ -46,5 +46,5 @@ class ErrorHandler:
             status=HTTPStatus.METHOD_NOT_ALLOWED,
             cause=error
         )
-        _logger.error(exc, exc_info=True)
+        _logger.error(exc)
         return exc.dict(), HTTPStatus.METHOD_NOT_ALLOWED
