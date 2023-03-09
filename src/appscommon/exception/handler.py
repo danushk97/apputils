@@ -1,5 +1,5 @@
 """
-This module holds the class which is responsible for handling errors
+This module holds the class which is responsible for handling errors.
 """
 
 from logging import getLogger
@@ -16,18 +16,19 @@ class ErrorHandler:
     """
     Holds the HTTP error handler functions.
     """
+    @staticmethod
     def page_not_found_handler(error: Exception) -> tuple:
         """
         Handles the Page not found error.
 
         Args:
-            error (Exception)
+            error (Exception):
 
         Returns:
             response_content (str), status (HttpStatus):
         """
         _logger.error(error)
-        return "404 page not found", HTTPStatus.NOT_FOUND
+        return '404 page not found', HTTPStatus.NOT_FOUND
 
     @staticmethod
     def method_not_allowed_handler(error: Exception) -> tuple:
@@ -35,7 +36,7 @@ class ErrorHandler:
         Handles the Page not found error.
 
         Args:
-            error (Exception)
+            error (Exception):
 
         Returns:
             response_dict (common.schemas.ErrorResponseSchema), status (HttpStatus):
