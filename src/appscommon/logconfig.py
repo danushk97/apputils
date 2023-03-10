@@ -24,7 +24,7 @@ class RequestFormatter(logging.Formatter):
         return g.get('request_id')
 
 
-def init():
+def init_logging():
     handler = logging.StreamHandler(sys.stdout)
     handler.setFormatter(RequestFormatter(
         '%(asctime)s.%(msecs)03d %(levelname)s %(request_id)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s'
