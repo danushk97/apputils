@@ -12,3 +12,4 @@ class BaseModel:
         self.created_at = created_at
         self.last_updated_by = last_updated_by
         self.last_updated_at = last_updated_at
+        self.is_active = True

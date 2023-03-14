@@ -16,3 +16,4 @@ def test_basemodel_returns_basemodel_instance():
     assert base_model.created_at.date() == datetime(2023, 1, 1).date()
     assert base_model.last_updated_at == None
     assert base_model.last_updated_by == None
+    assert base_model.is_active == True
