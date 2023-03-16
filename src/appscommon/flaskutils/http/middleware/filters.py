@@ -28,7 +28,8 @@ def error_filter(source: Callable) -> Callable:
             if isinstance(err, AppException):
                 exc = err
             else:
-                exc = AppException(cause=err)
+                exc = AppException()
+                exc.__cause__ = err
 
             _logger.error(exc, exc_info=True)
 

@@ -25,7 +25,6 @@ class AppException(Exception):
         title: str = ErrorMessage.INTERNAL_SERVER_ERROR,
         detail: str = ErrorMessage.INTERNAL_SERVER_ERROR,
         status: int = HTTPStatus.INTERNAL_SERVER_ERROR,
-        cause: Exception = None,
         log_message: str = None
     ) -> None:
         """
@@ -35,7 +34,6 @@ class AppException(Exception):
         self.title = title
         self.detail = detail
         self.status = status
-        self.cause = cause
         self._log_message = log_message
 
     def dict(self) -> dict:
@@ -48,8 +46,8 @@ class AppException(Exception):
 
     def __str__(self) -> str:
         message = f'<{type(self).__name__}> {self._log_message or self.detail}'
-        if self.cause:
-            message += f' [CAUSE]: {self.cause}'
+        if self.__cause__:
+            message += f' [CAUSE]: {self.__cause__}'
 
         return message
 
@@ -67,10 +65,9 @@ class InvalidParamsException(AppException):
         type: str = 'about:blank',
         title: str = ErrorMessage.VALIDATION_ERROR,
         detail: str = ErrorMessage.REQUEST_PARAMS_DID_NOT_VALIDATE,
-        status: int = HTTPStatus.BAD_REQUEST,
-        cause: Exception = None
+        status: int = HTTPStatus.BAD_REQUEST
     ) -> None:
-        super().__init__(type, title, detail, status, cause, invalid_params)
+        super().__init__(type, title, detail, status, invalid_params)
         self.invalid_params = invalid_params
 
     def dict(self) -> dict:

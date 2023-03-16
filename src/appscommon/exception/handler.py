@@ -44,8 +44,8 @@ class ErrorHandler:
         exc = AppException(
             title=ErrorMessage.INVALID_HTTP_METHOD,
             detail=ErrorMessage.METHOD_NOT_ALLOWED,
-            status=HTTPStatus.METHOD_NOT_ALLOWED,
-            cause=error
+            status=HTTPStatus.METHOD_NOT_ALLOWED
         )
+        exc.__cause__ = error
         _logger.error(exc)
         return exc.dict(), HTTPStatus.METHOD_NOT_ALLOWED
