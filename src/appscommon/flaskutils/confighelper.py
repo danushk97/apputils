@@ -2,26 +2,27 @@ import importlib
 import inspect
 from logging import getLogger
 from os import abort
-from typing import Callable, Dict, Type
+from typing import Callable, Dict
+from flask import Flask
+
 
 from appscommon.exception.handler import ErrorHandler
-from flask import Flask
 
 
 _logger = getLogger(__name__)
 
 
-def ensure_configs(config: Type) -> None:
+def ensure_configs(config: dict) -> None:
     """
     Aborts application start up if there is any empty config values. It should be called at the application startup.
 
     Args:
-        config (Type): A class with attributes which represents the app config.
+        config (dict): A dictionary of configs.
     """
     _logger.info('Valdating configs...')
     missing_configs = []
-    for key, value in inspect.getmembers(config):
-        if not key.startswith('_') and (value is None or str(value).strip() == ''):
+    for key, value in config.items():
+        if value is None or str(value).strip() == '':
             missing_configs.append(key)
 
     if missing_configs:
