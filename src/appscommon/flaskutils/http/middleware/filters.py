@@ -25,7 +25,10 @@ def error_filter(source: Callable) -> Callable:
                 exc = err
             elif isinstance(err, HTTPException) and hasattr(err, 'response') and \
                     err.response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
-                errors = [{'field': err.pop('loc'), **err} for err in err.response.json]
+                errors = [
+                    {'field': err.pop('loc'), 'msg': err.pop('msg', 'unknown error.')}
+                    for err in err.response.json
+                ]
                 exc = InvalidParamsException(invalid_params=errors)
                 _logger.error(exc, exc_info=True)
 

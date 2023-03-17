@@ -26,7 +26,7 @@ def test_error_filter_given_source_fn_raises_validation_error_then_raises_invali
     exc_dict, status = error_filter(src_fun)()
     assert exc_dict == {
         'detail': 'Your request params did not validate',
-        'invalid_params': [{'field': 'fake_field'}],
+        'invalid_params': [{'field': 'fake_field', 'msg': 'unknown error.'}],
         'status': 'failure',
         'title': 'Validation error',
         'type': 'about:blank',
