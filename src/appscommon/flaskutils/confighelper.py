@@ -12,16 +12,18 @@ from appscommon.exception.handler import ErrorHandler
 _logger = getLogger(__name__)
 
 
-def ensure_configs(config: dict) -> None:
+def ensure_configs(config: dict, required_configs: list) -> None:
     """
     Aborts application start up if there is any empty config values. It should be called at the application startup.
 
     Args:
         config (dict): A dictionary of configs.
+        required_configs (list): A list of must have configs.
     """
     _logger.info('Valdating configs...')
     missing_configs = []
-    for key, value in config.items():
+    for key in required_configs:
+        value = config[key]
         if value is None or str(value).strip() == '':
             missing_configs.append(key)
 

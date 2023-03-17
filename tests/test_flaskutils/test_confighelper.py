@@ -9,14 +9,14 @@ from appscommon.exception.handler import ErrorHandler
 
 def test_ensure_confgis_given_config_class_with_missing_config_then_aborts(monkeypatch, caplog):
     monkeypatch.setattr('appscommon.flaskutils.confighelper.abort', lambda: None)
-    confighelper.ensure_configs({'DB_URL': ''})
+    confighelper.ensure_configs({'DB_URL': ''}, ['DB_URL'])
     assert 'Aborting process due to missing configs: [\'DB_URL\']' in caplog.text
 
 
 def test_ensure_confgis_given_config_class_with_valid_configs_then_returns_none():
     assert confighelper.ensure_configs({
         'DB_URL': 'postgres://localhost:5432@user:password/BNY'
-    }) is None
+    }, ['DB_URL']) is None
 
 
 def test_inject_dependencies_given_valid_input_then_returns_injected_dependents():
