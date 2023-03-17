@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from werkzeug.exceptions import HTTPException
 
 from tests.fakes.fake_request import FakeRequest
 from tests.fakes.fake_validationerror import FakeValidationError
@@ -14,8 +15,13 @@ def test_error_filter_given_source_fn_raises_validation_error_then_raises_invali
     monkeypatch.setattr(f'{filters_module_path}.request', FakeRequest)
     monkeypatch.setattr(f'{filters_module_path}.ValidationError', FakeValidationError)
 
+    class FakeResponse:
+        status_code = 422
+        json = [{'loc': 'fake_field'}]
+
     def src_fun():
-        raise FakeValidationError([{'loc': 'fake_field'}])
+        http_ex = HTTPException(response=FakeResponse)
+        raise http_ex
 
     exc_dict, status = error_filter(src_fun)()
     assert exc_dict == {

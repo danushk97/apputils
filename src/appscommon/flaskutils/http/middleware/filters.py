@@ -1,10 +1,12 @@
 from functools import wraps
 from logging import getLogger
 from time import perf_counter
+from flask import request
 from typing import Callable
+from http import HTTPStatus
+from werkzeug.exceptions import HTTPException
 
 from appscommon.exception import AppException, InvalidParamsException
-from flask import request
 from pydantic import ValidationError
 
 
@@ -18,15 +20,16 @@ def error_filter(source: Callable) -> Callable:
         _logger.info(f'Starting to process {request.path}.')
         try:
             data = source(*args, **kwargs)
-        except ValidationError as v_err:
-            errors = [{'field': err.pop('loc'), **err} for err in v_err.errors()]
-            exc = InvalidParamsException(invalid_params=errors)
-            _logger.error(exc, exc_info=True)
-
-            return exc.dict(), exc.status
         except Exception as err:
             if isinstance(err, AppException):
                 exc = err
+            elif isinstance(err, HTTPException) and hasattr(err, 'response') and \
+                    err.response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
+                errors = [{'field': err.pop('loc'), **err} for err in err.response.json]
+                exc = InvalidParamsException(invalid_params=errors)
+                _logger.error(exc, exc_info=True)
+
+                return exc.dict(), exc.status
             else:
                 exc = AppException()
                 exc.__cause__ = err
