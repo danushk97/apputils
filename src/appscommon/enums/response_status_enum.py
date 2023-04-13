@@ -1,6 +1,6 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class ResponseStatusEnum(Enum):
+class ResponseStatusEnum(StrEnum):
     SUCCESS = 'success'
     FAILURE = 'failure'
