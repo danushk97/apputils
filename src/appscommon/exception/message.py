@@ -1,7 +1,7 @@
-from enum import StrEnum
+from appscommon.readonly import ReadOnly
 
 
-class ErrorMessage(StrEnum):
+class ErrorMessage(ReadOnly):
     INTERNAL_SERVER_ERROR = 'Internal server error'
     INVALID_HTTP_METHOD = 'Invalid HTTP method'
 
