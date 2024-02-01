@@ -39,7 +39,7 @@ class ErrorHandler:
             error (Exception):
 
         Returns:
-            response_dict (common.schemas.ErrorResponseSchema), status (HttpStatus):
+            response_dict (ErrorResponseSchema), status (HttpStatus):
         """
         exc = AppException(
             title=ErrorMessage.INVALID_HTTP_METHOD,

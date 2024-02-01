@@ -14,13 +14,16 @@ class AppException(Exception):
     classes.
 
     Attributes:
-        type (str): A URI reference that identifies the problem type.When this member is not present,
-                    its value is assumed to be "about:blank".
+        type (str): A URI reference that identifies the problem type.When this
+                    member is not present, its value is assumed to be
+                    "about:blank".
         title (str): A short, human-readable summary of the problem type.
-        detail (str): A human-readable explanation specific to this occurrence of the problem.
+        detail (str): A human-readable explanation specific to this occurrence
+                      of the problem.
         status (int): The HTTP status code.
     """
-    def __init__(self,
+    def __init__(
+        self,
         type: str = 'about:blank',
         title: str = ErrorMessage.INTERNAL_SERVER_ERROR,
         detail: str = ErrorMessage.INTERNAL_SERVER_ERROR,
@@ -54,13 +57,15 @@ class AppException(Exception):
 
 class InvalidParamsException(AppException):
     """
-    This class represents invalid params exception which should be raised whenever a request parameters did not
-    validate.
+    This class represents invalid params exception which should be raised
+    whenever a request parameters did not validate.
 
     Args:
-        invalid_params (list): A list of dict containing invalid field/param name and a reason.
+        invalid_params (list): A list of dict containing invalid field/param
+        name and a reason.
     """
-    def __init__(self,
+    def __init__(
+        self,
         invalid_params: list,
         type: str = 'about:blank',
         title: str = ErrorMessage.VALIDATION_ERROR,

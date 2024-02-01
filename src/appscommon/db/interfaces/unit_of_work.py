@@ -8,7 +8,8 @@ from abc import ABC, abstractmethod
 class AbstractUnitOfWork(ABC):
     def __enter__(self):
         """
-        Gets executed when this instance of class is used with "with" statement.
+        Gets executed when this instance of class is used with "with"
+        statement.
         """
         return self
 

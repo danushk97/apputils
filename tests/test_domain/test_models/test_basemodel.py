@@ -10,10 +10,11 @@ def test_basemodel_returns_basemodel_instance():
         'fake_id',
         datetime.now(),
         None,
-        None
+        None,
+        True
     )
     assert base_model.created_by == 'fake_id'
     assert base_model.created_at.date() == datetime(2023, 1, 1).date()
-    assert base_model.last_updated_at == None
-    assert base_model.last_updated_by == None
-    assert base_model.is_active == True
+    assert base_model.last_updated_at is None
+    assert base_model.last_updated_by is None
+    assert base_model.is_active is True

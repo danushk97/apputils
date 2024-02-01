@@ -1,0 +1,15 @@
+Metadata-Version: 2.1
+Name: appscommon
+Version: 0.0.2
+Summary: Common utility package.
+Author-email: Danush Kumar Baskarraj <danushkumar.baskar@gmail.com>
+Project-URL: Homepage, https://github.com/danushk97/componenet-appscommon
+Project-URL: Bug Tracker, https://github.com/danushk97/componenet-appscommon/issues
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+
+# apputils Package
+
+All the common functionalities that are used project wide are maintained here.

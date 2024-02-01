@@ -1,3 +1,7 @@
+"""
+This module contains schemas.
+"""
+
 from typing import Any, List, Optional
 
 from appscommon.enums import ResponseStatusEnum
